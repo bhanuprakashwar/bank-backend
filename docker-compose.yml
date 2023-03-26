@@ -1,0 +1,23 @@
+version: '3'
+services:
+  userDB:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: userDb
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  app:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: userDb
+volumes:
+  db-data:

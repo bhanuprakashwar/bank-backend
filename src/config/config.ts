@@ -15,6 +15,7 @@ export default {
     },
   },
   JWTSECRET: process.env.JWTSECRET,
+  JWT_EXPIRATION:process.env.JWT_EXPIRATION,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   logger,
