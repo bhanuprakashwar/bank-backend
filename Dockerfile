@@ -8,6 +8,11 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
+COPY .env ./dist/
+WORKDIR ./dist
+
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["node", "bin/start.js"]
