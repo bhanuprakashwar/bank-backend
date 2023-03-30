@@ -8,11 +8,11 @@ sequelize
   .authenticate()
   .then(() => {
     logger.info('Connected to the database.');
+    app.listen(port, () => {
+      logger.info(`Server is running on port ${port}.`);
+    });
   })
   .catch((err) => {
     logger.error('Unable to connect to the database:', err);
   });
 
-app.listen(port, () => {
-  logger.info(`Server is running on port ${port}.`);
-});

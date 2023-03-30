@@ -17,6 +17,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
           error: 'Username already taken'
         });
       }
+      await User.sync();
 
     // Create user
     user = await User.create({
