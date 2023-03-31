@@ -8,11 +8,16 @@ dotenv.config();
 
 export default {
   database: {
-    dsn: 'mongodb://localhost:37017/warbank',
-    status: {
-      connected: false,
-      error: false,
+    user:{
+      name: process.env.DB_NAME_USER,
+      user: process.env.DB_USER_USER,
+      password: process.env.DB_PASSWORD_USER,
     },
+    balance:{
+      name: process.env.DB_NAME_BALANCE,
+      user: process.env.DB_USER_BALANCE,
+      password: process.env.DB_PASSWORD_BALANCE,
+    }
   },
   JWTSECRET: process.env.JWTSECRET,
   JWT_EXPIRATION:process.env.JWT_EXPIRATION,

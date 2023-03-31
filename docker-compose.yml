@@ -3,21 +3,37 @@ services:
   userDB:
     image: postgres:latest
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: userDb
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: password_user
+      POSTGRES_DB: userDB
     ports:
       - 5432:5432
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - user-db-data:/var/lib/postgresql/data
+  balanceDB:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres_balance
+      POSTGRES_PASSWORD: password_balance
+      POSTGRES_DB: balanceDB
+    ports:
+      - 5433:5432
+    volumes:
+      - balance-db-data:/var/lib/postgresql/data
   app:
     build: .
     ports:
       - 3000:3000
     environment:
-      DB_HOST: db
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DB_NAME: userDb
+      DB_HOST_USER: userDB
+      DB_USER_USER: postgres_user
+      DB_PASSWORD_USER: password_user
+      DB_NAME_USER: userDB
+      
+      DB_HOST_BALANCE: balanceDB
+      DB_USER_BALANCE: postgres_balance   
+      DB_PASSWORD_BALANCE: password_balance
+      DB_NAME_BALANCE: balanceDB
 volumes:
-  db-data:
+  user-db-data:
+  balance-db-data:

@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
 import User from '../models/user.js';
+import balanceController from './balanceController.js';
 
 // CREATE a new user
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userName, password, email, dob } = req.body;
+    await User.sync();
     let user = await User.findOne({
-        where: {
-          userName
-        }
-      });
-  
-      if (user) {
-        return res.status(409).json({
-          error: 'Username already taken'
-        });
+      where: {
+        userName
       }
-      await User.sync();
+    });
+
+    if (user) {
+      return res.status(409).json({
+        error: 'Username already taken'
+      });
+    }
 
     // Create user
     user = await User.create({
@@ -26,10 +26,16 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       email,
       dob,
     });
-
-    res.status(201).json({
-        message: `Successfully created the ${userName} user`
+    const balanceAccount = await balanceController.createBalanceAccount(user.id);
+    if (balanceAccount) {
+      res.status(201).json({
+        message: `Successfully oepned the account for ${userName} with 100000 rupees`
       });
+    } else {
+      res.status(201).json({
+        message: `Successfully created the ${userName} user but problem with balance`
+      });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -77,12 +83,9 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
 
     const { userName, password, email, dob } = req.body;
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     await user.update({
       userName,
-      password: hashedPassword,
+      password,
       email,
       dob,
     });
@@ -112,11 +115,11 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
-export default{
-    createUser,
-    getAllUsers,
-    getUserById,
-    updateUser,
-    deleteUser
+export default {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser
 }
 
