@@ -9,7 +9,7 @@ const { JWTSECRET, JWT_EXPIRATION } = config;
 interface UserPayload {
   id: number;
   userName: string;
-  email: string;
+  emailId: string;
 }
 
 const login = async (req: Request, res: Response) => {
@@ -36,10 +36,10 @@ const login = async (req: Request, res: Response) => {
       });
     }
 
-    const token = generateToken({id:user.id,userName:user.userName,email:user.email});
+    const token = generateToken({id:user.id,userName:user.userName,emailId:user.emailId});
 
     return res.status(200).json({
-      token
+      apiToken:token
     });
   } catch (err) {
     console.error(err.message);
@@ -51,7 +51,7 @@ const login = async (req: Request, res: Response) => {
 
 function generateToken(user: UserPayload): string {
   const token = jwt.sign(
-    { id: user.id, userName: user.userName, email: user.email },
+    { id: user.id, userName: user.userName, emailId: user.emailId },
     JWTSECRET,
     { expiresIn: JWT_EXPIRATION, algorithm: 'HS256' },
   );

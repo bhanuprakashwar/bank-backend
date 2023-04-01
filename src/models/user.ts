@@ -5,8 +5,8 @@ class User extends Model {
   public id!: number;
   public userName!: string;
   public password!: string;
-  public email!: string;
-  public dob!: Date;
+  public emailId!: string;
+  public gender!: string;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -27,7 +27,7 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
+    emailId: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
@@ -35,8 +35,8 @@ User.init(
         isEmail: true,
       },
     },
-    dob: {
-      type: DataTypes.DATE,
+    gender: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

@@ -5,7 +5,7 @@ import balanceController from './balanceController.js';
 // CREATE a new user
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { userName, password, email, dob } = req.body;
+    const { userName, password, emailId, gender } = req.body;
     await User.sync();
     let user = await User.findOne({
       where: {
@@ -23,17 +23,21 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     user = await User.create({
       userName,
       password,
-      email,
-      dob,
+      emailId,
+      gender,
     });
     const balanceAccount = await balanceController.createBalanceAccount(user.id);
     if (balanceAccount) {
       res.status(201).json({
-        message: `Successfully oepned the account for ${userName} with 100000 rupees`
+        message: `Successfully opened the account for ${userName} with 100000 rupees`,
+        balance: true,
+        account: true,
       });
     } else {
       res.status(201).json({
-        message: `Successfully created the ${userName} user but problem with balance`
+        message: `Successfully created the ${userName} user but problem with balance`,
+        balance: false,
+        account: true,
       });
     }
   } catch (error) {
@@ -81,13 +85,13 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const { userName, password, email, dob } = req.body;
+    const { userName, password, emailId, gender } = req.body;
 
     await user.update({
       userName,
       password,
-      email,
-      dob,
+      emailId,
+      gender,
     });
 
     res.status(200).json({ user });
