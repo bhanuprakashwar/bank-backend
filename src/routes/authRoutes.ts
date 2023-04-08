@@ -4,6 +4,6 @@ import { validateRequest as middleware} from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/login', middleware, authController.login);
+router.post('/login', authController.login);
 
 export { router as authRoutes };

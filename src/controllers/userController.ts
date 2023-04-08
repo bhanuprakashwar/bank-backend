@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user.js';
 import balanceController from './balanceController.js';
-
+import bcrypt from 'bcryptjs';
 // CREATE a new user
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -18,11 +18,12 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         error: 'Username already taken'
       });
     }
+    const hashPassword = await bcrypt.hash(password,12);
 
     // Create user
     user = await User.create({
       userName,
-      password,
+      password: hashPassword,
       emailId,
       gender,
     });
@@ -42,7 +43,11 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({
+      message: 'Server Error',
+      balance: false,
+      account: false,
+    });
   }
 };
 
