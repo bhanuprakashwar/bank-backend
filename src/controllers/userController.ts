@@ -15,7 +15,9 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 
     if (user) {
       return res.status(409).json({
-        error: 'Username already taken'
+        message: 'Username already taken',
+        balance: false,
+        account: false
       });
     }
     const hashPassword = await bcrypt.hash(password,12);
