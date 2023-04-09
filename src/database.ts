@@ -15,8 +15,15 @@ const balanceSequelize = new Sequelize(database.balance.name, database.balance.u
   logging: false,
 });
 
+const transactionSequelize = new Sequelize(database.transaction.name, database.transaction.user, database.transaction.password, {
+  host: database.transaction.name,
+  dialect: 'postgres',
+  logging: false
+})
+
 
 export {
   userSequelize,
-  balanceSequelize
+  balanceSequelize,
+  transactionSequelize
 };

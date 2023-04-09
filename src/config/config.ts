@@ -17,6 +17,11 @@ export default {
       name: process.env.DB_NAME_BALANCE,
       user: process.env.DB_USER_BALANCE,
       password: process.env.DB_PASSWORD_BALANCE,
+    },
+    transaction:{
+      name: process.env.DB_NAME_TRANSACTION,
+      user: process.env.DB_USER_TRANSACTION,
+      password: process.env.DB_PASSWORD_TRANSCTION,
     }
   },
   JWTSECRET: process.env.JWTSECRET,
