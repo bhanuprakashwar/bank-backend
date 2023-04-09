@@ -28,7 +28,7 @@ Transaction.init({
 
 }, {
     sequelize: transactionSequelize,
-    tableName: "balanceDB"
+    tableName: "transactionDB"
 });
 
 export default Transaction;

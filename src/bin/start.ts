@@ -1,7 +1,7 @@
 import app from '../app.js';
-import {balanceSequelize, userSequelize} from '../database.js';
+import { balanceSequelize, transactionSequelize, userSequelize } from '../database.js';
 import config from '../config/config.js'
-const {logger} = config;
+const { logger } = config;
 const port = process.env.PORT || 3000;
 
 userSequelize
@@ -16,7 +16,7 @@ userSequelize
     logger.error('Unable to connect to the user database:', err);
   });
 
-  balanceSequelize
+balanceSequelize
   .authenticate()
   .then(() => {
     logger.info('Connected to the balance database.');
@@ -25,3 +25,11 @@ userSequelize
     logger.error('Unable to connect to the balance database:', err);
   });
 
+transactionSequelize
+  .authenticate()
+  .then(() => {
+    logger.info('Connected to the transaction database');
+  })
+  .catch((err) => {
+    logger.error('Unable to connect to the transaction database:', err);
+  })

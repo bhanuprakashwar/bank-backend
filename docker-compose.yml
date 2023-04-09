@@ -1,6 +1,6 @@
 version: '3'
 services:
-  userDB:
+  userService:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres_user
@@ -10,7 +10,7 @@ services:
       - 5432:5432
     volumes:
       - user-db-data:/var/lib/postgresql/data
-  balanceDB:
+  balanceService:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres_balance
@@ -20,20 +20,36 @@ services:
       - 5433:5432
     volumes:
       - balance-db-data:/var/lib/postgresql/data
+  transactionService:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres_transaction
+      POSTGRES_PASSWORD: password_transaction
+      POSTGRES_DB: transactionDB
+    ports:
+      - 5434:5432
+    volumes:
+      - transaction-db-data:/var/lib/postgresql/data
   app:
     build: .
     ports:
       - 3000:3000
     environment:
-      DB_HOST_USER: userDB
+      DB_HOST_USER: userService
       DB_USER_USER: postgres_user
       DB_PASSWORD_USER: password_user
       DB_NAME_USER: userDB
       
-      DB_HOST_BALANCE: balanceDB
+      DB_HOST_BALANCE: balanceService
       DB_USER_BALANCE: postgres_balance   
       DB_PASSWORD_BALANCE: password_balance
       DB_NAME_BALANCE: balanceDB
+
+      DB_HOST_TRANSACTION: transactionService
+      DB_USER_TRANSACTION: postgres_transaction   
+      DB_PASSWORD_TRANSACTION: password_transaction
+      DB_NAME_TRANSACTION: transactionDB
 volumes:
   user-db-data:
   balance-db-data:
+  transaction-db-data:

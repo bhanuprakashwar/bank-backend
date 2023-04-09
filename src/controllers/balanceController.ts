@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Balance from "../models/balance.js";
 import User from "../models/user.js";
+import { Transaction } from 'sequelize';
 
 const createBalanceAccount = async (userId: number) => {
     try {
@@ -26,8 +27,18 @@ const createBalanceAccount = async (userId: number) => {
 
 }
 
-const updateBalance = () => {
-
+const updateBalance = async (userId: string, amount: number, transaction: Transaction) => {
+    try {
+        await Balance.update({ balance: amount }, {
+            where: {
+                userId: userId
+            },
+            transaction
+        });
+    } catch (error) {
+        await transaction.rollback();
+        console.log(error);
+    }
 }
 
 const deleteBalanceAccount = () => {
@@ -35,7 +46,7 @@ const deleteBalanceAccount = () => {
 }
 
 //need to replace the userId with accountNumber
-const getBalance = async(req: Request, res: Response) => {
+const getBalance = async (req: Request, res: Response) => {
     try {
         const userId = req.query.userId;
         console.log(userId);
@@ -44,12 +55,12 @@ const getBalance = async(req: Request, res: Response) => {
                 userId: userId
             }
         });
-        if (userBalanceInfo?.balance){
-            res.status(200).send({userId:userId, balance: userBalanceInfo.balance});
+        if (userBalanceInfo?.balance) {
+            res.status(200).send({ userId: userId, balance: userBalanceInfo.balance });
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({message:"Server Error"});
+        res.status(500).send({ message: "Server Error" });
     }
 }
 
