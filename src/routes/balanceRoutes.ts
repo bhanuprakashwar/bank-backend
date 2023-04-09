@@ -5,6 +5,6 @@ const router = Router();
 
 router.post("/updateBalance", middleware, balanceController.updateBalance);
 router.post("/deleteBalanceAccount", middleware, balanceController.deleteBalanceAccount);
-router.post("/getBalance", middleware, balanceController.getBalance);
+router.get("/getBalance", middleware, balanceController.getBalance);
 export { router as balanceRoutes };
 

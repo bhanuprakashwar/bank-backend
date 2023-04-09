@@ -50,10 +50,11 @@ const login = async (req: Request, res: Response) => {
 };
 
 function generateToken(user: UserPayload): string {
+  let expiresIn = Number(JWT_EXPIRATION);
   const token = jwt.sign(
     { id: user.id, userName: user.userName, emailId: user.emailId },
     JWTSECRET,
-    { expiresIn: JWT_EXPIRATION, algorithm: 'HS256' },
+    { expiresIn, algorithm: 'HS256' },
   );
   return token;
 }

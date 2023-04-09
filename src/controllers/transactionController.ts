@@ -4,21 +4,21 @@ import Balance from '../models/balance.js';
 
 const transferMoney = async (req: Request, res: Response) => {
     try {
-        const { transferFrom, trasnferTo, amount } = req.body;
+        const { transferFrom, transferTo, amount } = req.body;
         const receiver = await User.findOne({
             where: {
-                id: trasnferTo
+                id: transferTo
             }
         });
         if(!receiver){
             res.status(404).send({message:"Receiver not found"});
         }
-        const senderFunds = await Balance.findOne({
+        const sender= await Balance.findOne({
             where:{
                 userId:transferFrom
             }
         });
-        if(senderFunds.balance < amount){
+        if(sender.balance < amount){
             res.status(402).send({message:"Insufficent balance"})
         }
         //need to implement rest of the code
