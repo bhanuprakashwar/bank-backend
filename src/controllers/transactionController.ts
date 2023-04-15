@@ -2,80 +2,50 @@ import { Request, Response } from 'express';
 import User from '../models/user.js';
 import Balance from '../models/balance.js';
 import balanceController from './balanceController.js';
-import { transactionSequelize } from '../database.js';
+import { balanceSequelize, transactionSequelize, userSequelize } from '../database.js';
 import Transaction from '../models/transaction.js';
 
-const debitAccount = () => {
-
-}
-
-const creditAccount = () => {
-}
 const transferMoney = async (req: Request, res: Response) => {
-    await Transaction.sync();
-    const transaction = await transactionSequelize.transaction();
-    try {
-        const { transferFrom, transferTo, amount } = req.body;
-        console.log("Entered the transfer method");
-        console.log(req.body);
-        console.log("Okay")
-        const receiverExists = await User.findOne({
-            where: {
-                id: transferTo
-            },
-            transaction
-        });
-        console.log("receiverExists:", receiverExists);
-        if (!receiverExists) {
-            res.status(404).send({ message: "Receiver not found" });
-        }
-        const sender = await Balance.findOne({
-            where: {
-                userId: transferFrom
-            },
-            transaction
-        });
-        const receiver = await Balance.findOne({
-            where: {
-                userId: transferTo
-            },
-            transaction
-        });
-        if (sender.balance < amount) {
-            res.status(402).send({ message: "Insufficent balance" });
-        }
-        //need to implement rest of the code
-        sender.balance -= amount;
-        const updatedSenderBalance = await balanceController.updateBalance(transferFrom, sender.balance,transaction);
-        receiver.balance += amount
-        const updatedReceiverBalance = await balanceController.updateBalance(transferTo, receiver.balance, transaction);
-        await transaction.commit();
-        await Transaction.create({
-            transferFrom: sender.userId,
-            transferTo: receiver.userId,
-            amount: amount,
-            status: "Success"
-        })
-        res.status(201).send({message:"Transaction Successful"});
+  const { transferFrom, transferTo, balance } = req.body;
+  const transaction = await userSequelize.transaction();
+  try {
+    // Check if transferFrom and transferTo users exist in the UserDB
+    const receiver= await User.findOne({ where: { id: transferFrom } });
 
-    } catch (error) {
-        await transaction.rollback();
-        console.log(error);
-        await Transaction.create({
-            transferFrom: req.body.transferFrom,
-            transferTo: req.body.transferTo,
-            amount: req.body.amount,
-            status: "Failed"
-        });
-        res.status(500).send({ message: "Server Error" });
+    if (!receiver) {
+      return res.status(404).json({ message: 'Receiver user not found' });
     }
-}
 
-const getTransactionDetails = () => {
+    // Check if transferFrom user has sufficient balance
+    const senderBalance = await Balance.findOne({
+      where: { userId: transferFrom },
+      attributes: ['balance'],
+    });
 
-}
+    if (!senderBalance || senderBalance.balance < balance) {
+      return res.status(400).json({ message: 'Insufficient balance' });
+    }
 
-export default {
-    transferMoney,
-    getTransactionDetails
-}
+    // Perform transaction using sequelize transaction method
+    await balanceController.debitBalance(transferFrom,balance,transaction);
+    await balanceController.creditBalance(transferTo,balance,transaction);
+    
+    // Create transaction record in the TransactionDB
+    await Transaction.create(
+      {
+        amount: balance,
+        sender: transferFrom,
+        receiver: transferTo,
+      },
+      { transaction }
+    );
+    await transaction.commit();
+    return res.json({ message: 'Transaction successful' });
+  } catch (error) {
+    console.error(error);
+    await transaction.rollback();
+    return res.status(500).json({ message: 'Error performing transaction' });
+  }
+};
+
+export default { transferMoney };

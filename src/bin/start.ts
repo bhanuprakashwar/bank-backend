@@ -15,21 +15,3 @@ userSequelize
   .catch((err) => {
     logger.error('Unable to connect to the user database:', err);
   });
-
-balanceSequelize
-  .authenticate()
-  .then(() => {
-    logger.info('Connected to the balance database.');
-  })
-  .catch((err) => {
-    logger.error('Unable to connect to the balance database:', err);
-  });
-
-transactionSequelize
-  .authenticate()
-  .then(() => {
-    logger.info('Connected to the transaction database');
-  })
-  .catch((err) => {
-    logger.error('Unable to connect to the transaction database:', err);
-  })

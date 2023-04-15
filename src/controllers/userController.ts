@@ -2,17 +2,19 @@ import { Request, Response } from 'express';
 import User from '../models/user.js';
 import balanceController from './balanceController.js';
 import bcrypt from 'bcryptjs';
+import { userSequelize } from '../database.js';
 // CREATE a new user
 const createUser = async (req: Request, res: Response): Promise<void> => {
+  const transaction = await userSequelize.transaction();
   try {
     const { userName, password, emailId, gender } = req.body;
     await User.sync();
     let user = await User.findOne({
       where: {
         userName
-      }
+      },
+      transaction
     });
-
     if (user) {
       return res.status(409).json({
         message: 'Username already taken',
@@ -20,7 +22,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
         account: false
       });
     }
-    const hashPassword = await bcrypt.hash(password,12);
+    const hashPassword = await bcrypt.hash(password, 12);
 
     // Create user
     user = await User.create({
@@ -28,15 +30,19 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       password: hashPassword,
       emailId,
       gender,
-    });
-    const balanceAccount = await balanceController.createBalanceAccount(user.id);
+    }, { transaction });
+
+    const balanceAccount = await balanceController.createBalanceAccount(user.id, transaction);
+
     if (balanceAccount) {
+      await transaction.commit();
       res.status(201).json({
         message: `Successfully opened the account for ${userName} with 100000 rupees`,
         balance: true,
         account: true,
       });
     } else {
+      await transaction.rollback();
       res.status(201).json({
         message: `Successfully created the ${userName} user but problem with balance`,
         balance: false,
@@ -45,6 +51,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     }
   } catch (error) {
     console.error(error);
+    await transaction.rollback();
     res.status(500).json({
       message: 'Server Error',
       balance: false,

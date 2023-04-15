@@ -42,7 +42,7 @@ User.init(
   },
   {
     sequelize: userSequelize,
-    tableName: 'users',
+    tableName: 'userDB',
   }
 );
 

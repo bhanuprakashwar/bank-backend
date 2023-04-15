@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import {balanceSequelize} from '../database.js';
+import {userSequelize} from '../database.js';
 
 class Balance extends Model {
     public id!: number;
@@ -25,7 +25,7 @@ Balance.init({
     }
 },
     {
-        sequelize: balanceSequelize,
+        sequelize: userSequelize,
         tableName: "balanceDB"
     })
 

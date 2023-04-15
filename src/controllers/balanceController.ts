@@ -1,42 +1,44 @@
 import { Request, Response } from 'express';
 import Balance from "../models/balance.js";
-import User from "../models/user.js";
 import { Transaction } from 'sequelize';
+import { userSequelize } from '../database.js';
 
-const createBalanceAccount = async (userId: number) => {
+const createBalanceAccount = async (userId: number, transaction: Transaction) => {
     try {
-        let user = await User.findOne({
-            where: {
-                id: userId
-            }
-        });
-        if (user) {
-            await Balance.sync();
-            const balance = await Balance.create({
-                userId,
-                balance: 100000
-            });
-            return true;
-        }
-        console.log("User Not found");
-        return false;
+        await Balance.sync();
+        await Balance.create({
+            userId,
+            balance: 100000
+        }, { transaction });
+        return true;
     } catch (error) {
         console.log(error);
         return false;
     }
-
 }
 
-const updateBalance = async (userId: string, amount: number, transaction: Transaction) => {
+const debitBalance = async (userId: string, amount: number, transaction: Transaction) => {
     try {
-        await Balance.update({ balance: amount }, {
+        await Balance.update({ balance: userSequelize.literal(`balance - ${amount}`) }, {
             where: {
                 userId: userId
             },
             transaction
         });
     } catch (error) {
-        await transaction.rollback();
+        console.log(error);
+    }
+}
+
+const creditBalance = async (userId: string, amount: number, transaction: Transaction) => {
+    try {
+        await Balance.update({ balance: userSequelize.literal(`balance - ${amount}`) }, {
+            where: {
+                userId: userId
+            },
+            transaction
+        });
+    } catch (error) {
         console.log(error);
     }
 }
@@ -66,7 +68,8 @@ const getBalance = async (req: Request, res: Response) => {
 
 export default {
     createBalanceAccount,
-    updateBalance,
+    debitBalance,
+    creditBalance,
     deleteBalanceAccount,
     getBalance
 }
