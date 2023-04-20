@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { userSequelize } from "../database.js";
+import { sequelizeInstance } from "../database.js";
 
 class Transaction extends Model {
     public id!: number;
@@ -27,7 +27,7 @@ Transaction.init({
     }
 
 }, {
-    sequelize: userSequelize,
+    sequelize: sequelizeInstance,
     tableName: "transactionDB"
 });
 

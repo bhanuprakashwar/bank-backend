@@ -1,10 +1,10 @@
 import app from '../app.js';
-import { balanceSequelize, transactionSequelize, userSequelize } from '../database.js';
+import {sequelizeInstance } from '../database.js';
 import config from '../config/config.js'
 const { logger } = config;
 const port = process.env.PORT || 3000;
 
-userSequelize
+sequelizeInstance
   .authenticate()
   .then(() => {
     logger.info('Connected to the user database.');

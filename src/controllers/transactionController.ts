@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import User from '../models/user.js';
 import Balance from '../models/balance.js';
 import balanceController from './balanceController.js';
-import { balanceSequelize, transactionSequelize, userSequelize } from '../database.js';
+import {sequelizeInstance } from '../database.js';
 import Transaction from '../models/transaction.js';
 
 const transferMoney = async (req: Request, res: Response) => {
   const { transferFrom, transferTo, balance } = req.body;
-  const transaction = await userSequelize.transaction();
+  const transaction = await sequelizeInstance.transaction();
   try {
     // Check if transferFrom and transferTo users exist in the UserDB
-    const receiver= await User.findOne({ where: { id: transferFrom } });
+    const receiver= await User.findOne({ where: { id: transferTo } });
 
     if (!receiver) {
       return res.status(404).json({ message: 'Receiver user not found' });
@@ -31,6 +31,7 @@ const transferMoney = async (req: Request, res: Response) => {
     await balanceController.creditBalance(transferTo,balance,transaction);
     
     // Create transaction record in the TransactionDB
+    await Transaction.sync();
     await Transaction.create(
       {
         amount: balance,

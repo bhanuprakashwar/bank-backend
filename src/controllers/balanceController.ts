@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Balance from "../models/balance.js";
 import { Transaction } from 'sequelize';
-import { userSequelize } from '../database.js';
+import { sequelizeInstance } from '../database.js';
 
 const createBalanceAccount = async (userId: number, transaction: Transaction) => {
     try {
@@ -19,7 +19,7 @@ const createBalanceAccount = async (userId: number, transaction: Transaction) =>
 
 const debitBalance = async (userId: string, amount: number, transaction: Transaction) => {
     try {
-        await Balance.update({ balance: userSequelize.literal(`balance - ${amount}`) }, {
+        await Balance.update({ balance: sequelizeInstance.literal(`balance - ${amount}`) }, {
             where: {
                 userId: userId
             },
@@ -32,7 +32,7 @@ const debitBalance = async (userId: string, amount: number, transaction: Transac
 
 const creditBalance = async (userId: string, amount: number, transaction: Transaction) => {
     try {
-        await Balance.update({ balance: userSequelize.literal(`balance - ${amount}`) }, {
+        await Balance.update({ balance: sequelizeInstance.literal(`balance + ${amount}`) }, {
             where: {
                 userId: userId
             },

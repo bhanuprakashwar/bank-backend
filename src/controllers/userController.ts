@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import User from '../models/user.js';
 import balanceController from './balanceController.js';
 import bcrypt from 'bcryptjs';
-import { userSequelize } from '../database.js';
+import { sequelizeInstance } from '../database.js';
 // CREATE a new user
 const createUser = async (req: Request, res: Response): Promise<void> => {
-  const transaction = await userSequelize.transaction();
+  const transaction = await sequelizeInstance.transaction();
   try {
     const { userName, password, emailId, gender } = req.body;
     await User.sync();
