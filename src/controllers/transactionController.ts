@@ -50,7 +50,18 @@ const transferMoney = async (req: Request, res: Response) => {
 };
 
 const getTransactions = async (req: Request, res: Response) => {
-
+  const {startDate, endDate, userId} = req.body;
+  try {
+    // Retrieve the last 10 transactions for the given user ID
+    const transactions = await Transaction.findAll({
+      where: { sender: userId },
+      limit: 10,
+      order: [['createdAt', 'DESC']]
+    });
+    res.status(200).json({ transactions });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 export default { transferMoney, getTransactions };
