@@ -61,11 +61,11 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 // GET all users
-const getAllUsers = async (_req: Request, res: Response): Promise<void> => {
+const getTotalUserCount = async (_req: Request, res: Response): Promise<void> => {
   try {
     const users = await User.findAll();
-
-    res.status(200).json(users);
+    const usersCount = users.length;
+    res.status(200).json({usersCount});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -75,14 +75,18 @@ const getAllUsers = async (_req: Request, res: Response): Promise<void> => {
 // GET a single user by id
 const getUserById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findByPk(req.query.userId);
 
     if (!user) {
       res.status(404).json({ message: 'User not found' });
       return;
     }
-
-    res.status(200).json(user);
+    const userObject = {
+      userName: user.userName,
+      emailId: user.emailId,
+      gender: user.gender,
+    }
+    res.status(200).json(userObject);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -135,7 +139,7 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
 };
 export default {
   createUser,
-  getAllUsers,
+  getTotalUserCount,
   getUserById,
   updateUser,
   deleteUser

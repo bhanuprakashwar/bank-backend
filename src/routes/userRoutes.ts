@@ -4,10 +4,10 @@ import { validateRequest as middleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', middleware, userController.getAllUsers);
-router.get('/:id', middleware, userController.getUserById);
+router.get('/usersCount', middleware, userController.getTotalUserCount);
+router.get('/', middleware, userController.getUserById);
 router.post('/', userController.createUser);
-router.put('/:id', middleware, userController.updateUser);
-router.delete('/:id', middleware, userController.deleteUser);
+router.put('/', middleware, userController.updateUser);
+router.delete('/', middleware, userController.deleteUser);
 
 export { router as userRoutes };
