@@ -1,30 +1,30 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import config from '../config/config.js';
+import { type Request, type Response, type NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+import config from '../config/config.js'
 
-const { JWTSECRET } = config;
+const { JWTSECRET } = config
 
 interface DecodedToken {
-  id: number;
+  id: number
 }
 
-export const validateRequest = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+export const validateRequest = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+  const token = req.header('Authorization')?.replace('Bearer ', '')
 
   if (!token) {
     return res.status(401).json({
       error: 'Authorization denied'
-    });
+    })
   }
 
   try {
-    const decoded = jwt.verify(token, JWTSECRET) as DecodedToken;
-    req.userId = decoded.id;
-    next();
+    const decoded = jwt.verify(token, JWTSECRET) as DecodedToken
+    req.userId = decoded.id
+    next()
   } catch (err) {
-    console.error(err.message);
+    console.error(err.message)
     return res.status(401).json({
       error: 'Authorization denied'
-    });
+    })
   }
-};
+}
