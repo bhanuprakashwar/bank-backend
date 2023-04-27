@@ -5,5 +5,6 @@ const router = Router();
 
 router.post('/transferTo', middleware, transactionController.transferMoney);
 router.post('/getTransactions', middleware, transactionController.getTransactions);
+router.post('/getRecentTransactions', middleware, transactionController.getRecentTransactions);
 
 export { router as transactionRoutes }

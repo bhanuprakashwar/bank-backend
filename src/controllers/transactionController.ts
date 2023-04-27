@@ -4,6 +4,7 @@ import Balance from '../models/balance.js';
 import balanceController from './balanceController.js';
 import { sequelizeInstance } from '../database.js';
 import Transaction from '../models/transaction.js';
+import { Op } from "sequelize";
 
 const transferMoney = async (req: Request, res: Response) => {
   const { transferFrom, transferTo, balance } = req.body;
@@ -49,13 +50,12 @@ const transferMoney = async (req: Request, res: Response) => {
   }
 };
 
-const getTransactions = async (req: Request, res: Response) => {
-  const {startDate, endDate, userId} = req.body;
+const getRecentTransactions = async (req: Request, res: Response) => {
+  const {transactionLimit, userId} = req.body;
   try {
-    // Retrieve the last 10 transactions for the given user ID
     const transactions = await Transaction.findAll({
       where: { sender: userId },
-      limit: 10,
+      limit: transactionLimit,
       order: [['createdAt', 'DESC']]
     });
     res.status(200).json({ transactions });
@@ -64,4 +64,19 @@ const getTransactions = async (req: Request, res: Response) => {
   }
 };
 
-export default { transferMoney, getTransactions };
+const getTransactions = async (req: Request, res: Response) => {
+  const {startDate, endDate, userId} = req.body;
+  try {
+    // Retrieve the last 10 transactions for the given user ID
+    const transactions = await Transaction.findAll({
+      where: { sender: userId,
+      createdAt:{[Op.between] : [startDate,endDate]} },
+      order: [['createdAt', 'DESC']]
+    });
+    res.status(200).json({ transactions });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export default { transferMoney, getTransactions,getRecentTransactions };
